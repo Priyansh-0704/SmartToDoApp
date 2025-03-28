@@ -20,6 +20,7 @@ mongoose.connect(mongoURI)
 app.get('/', (req, res) => {
     res.send('Server is ready');
 });
+ app.use(express.json()); // Middleware to parse JSON requests
 app.use('/api/v1/auth',authRoutes);
 
 const PORT = 4000;

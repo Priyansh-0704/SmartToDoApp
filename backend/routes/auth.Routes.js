@@ -5,7 +5,7 @@ import { logout } from "../controllers/auth.controller.js";
 
  const router = express.Router();
 
-router.get('/signup', signup);
-router.get('/signin', login);
-router.get('/logout', logout);
+router.post('/signup', signup);
+router.post('/signin', login);
+router.post('/logout', logout);
 export default router;
