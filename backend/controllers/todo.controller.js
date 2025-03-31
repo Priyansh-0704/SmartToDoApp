@@ -1,7 +1,6 @@
 import User from "../models/user.models.js";
 import Todo from "../models/todo.models.js";
 
-
 export async function createTodo(req, res) {
   try {
     const { title, description, completed, reminder, priority, username } = req.body;
@@ -30,6 +29,32 @@ export async function createTodo(req, res) {
     await user.save();
     
     res.status(201).json({ message: "Todo created successfully", todo: savedTodo });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function updateTodo(req, res) {
+  try {
+    const { title, description, completed, reminder, priority, username } = req.body;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      req.params.id,
+      { title, description, completed, reminder, priority },
+      { new: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    res.status(200).json({ message: "Task Updated", todo: updatedTodo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
