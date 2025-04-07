@@ -1,0 +1,44 @@
+.about {
+    width: 100%;
+    height: 100vh;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    padding: 48px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .about h1 {
+    font-size: 40px;
+    font-weight: 600;
+    color: #212121;
+    border-bottom: 3px solid #f44336;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .about p {
+    text-align: justify;
+    text-justify: inter-word;
+    font-size: 19px;
+    line-height: 32px;
+    color: #333;
+    max-width: 850px;
+  }
+  
+  .about p,
+  .about h1 {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  } */
+  
