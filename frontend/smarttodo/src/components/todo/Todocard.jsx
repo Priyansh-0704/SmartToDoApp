@@ -1,9 +1,9 @@
 import React from 'react';
 import './Todo.css';
-import {AiFillDelete} from 'react-icons/ai';
-import {GrDocumentUpdate} from 'react-icons/gr';
+import { AiFillDelete } from 'react-icons/ai';
+import { GrDocumentUpdate } from 'react-icons/gr';
 
-const Todocard = ({ todo }) => {
+const Todocard = ({ todo, id, delid }) => {
   const { title, description, reminderDate, reminderTime, priority } = todo;
 
   return (
@@ -16,17 +16,17 @@ const Todocard = ({ todo }) => {
         <p className='card-text mb-0'>
           <strong>Priority:</strong>{' '}
           <span className={`priority-pill ${priority}`}>
-          {priority.charAt(0).toUpperCase() + priority.slice(1)}
+            {priority.charAt(0).toUpperCase() + priority.slice(1)}
           </span>
         </p>
       </div>
       <div className=' d-flex justify-content-between align-items-center p-2'>
-       <div>
-        <GrDocumentUpdate className='card-icons-edit'/>
-       </div>
-      <div>
-        <AiFillDelete className='card-icons-del'/>
-      </div>
+        <div>
+          <GrDocumentUpdate className='card-icons-edit' />
+        </div>
+        <div onClick={() => { delid(id) }}>
+          <AiFillDelete className='card-icons-del' />
+        </div>
       </div>
     </div>
   );
