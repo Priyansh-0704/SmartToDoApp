@@ -1,64 +1,64 @@
 import  User  from '../models/user.models.js';
-import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt';
 
 export async function signup(req, res) {
- try {
-   const { username, password, name, email } = req.body;
-   if(!username || !password || !name || !email) {
-     return res.status(400).json({ message: 'All fields are required' });
-   }
-   if (password.length < 6) {
-     return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-   }
-   const userExists = await User.findOne({ $or: [{ username }, { email }] });
-   if (userExists) {
-     return res.status(400).json({ message: 'User already exists' });
-   }
-   const hashedPassword = await bcrypt.hash(password, 10);
-   const user = new User({ username, password: hashedPassword, name, email });
+  try {
+    const { username, password, name, email } = req.body;
+
+    if (!username || !password || !name || !email) {
+      return res.status(400).json({ status: "fail", message: 'All fields are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ status: "fail", message: 'Password must be at least 6 characters long' });
+    }
+
+    const userExists = await User.findOne({ $or: [{ username }, { email }] });
+    if (userExists) {
+      return res.status(200).json({ status: "fail", message: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword, name, email });
     const savedUser = await user.save();
+
     if (savedUser) {
-      res.status(201).json({ message: 'User created successfully' });
+      return res.status(201).json({ status: "success", message: 'User created successfully' });
     } else {
-      res.status(400).json({ message: 'Invalid user data' });
- }
- } catch (error) {
-    res.status(500).json({ message: error.message });
-  
- }
+      return res.status(400).json({ status: "fail", message: 'Invalid user data' });
+    }
+  } catch (error) {
+    return res.status(500).json({ status: "error", message: error.message });
+  }
 }
+
 export async function login(req, res) {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Username and password are required' });
+  if (!username || !password) {
+    return res.status(400).json({ status: "fail", message: 'Username and password are required' });
+  }
+
+  const user = await User.findOne({ username });
+  if (!user) {
+    return res.status(200).json({ status: "fail", message: 'Invalid username or password' });
+  }
+
+  const isValidPassword = await bcrypt.compare(password, user.password);
+  if (!isValidPassword) {
+    return res.status(200).json({ status: "fail", message: 'Invalid username or password' });
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: 'Logged in successfully',
+    others: {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      name: user.name
     }
-
-    const user = await User.findOne({ username });
-    if (!user) {
-        return res.status(400).json({ message: 'Invalid username or password' });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-        return res.status(400).json({ message: 'Invalid username or password' });
-    }
-
-    const token = jwt.sign(
-        { userId: user._id, username: user.username },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' } 
-    );
-
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'Strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
-
-    res.status(200).json({ message: 'Logged in successfully' });
+  });
 }
 
 
