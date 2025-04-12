@@ -11,10 +11,12 @@ const Todo = () => {
     description: '',
     reminderDate: '',
     reminderTime: '',
-    priority: ''
+    priority: '',
+    completed: false,
   });
 
   const [todos, setTodos] = useState([]);
+  const [selectedTodo, setSelectedTodo] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +32,6 @@ const Todo = () => {
     }
 
     setTodos((prevTodos) => [...prevTodos, formData]);
-
     toast.success("Your Task is Added!");
     toast.error("Your Task is Not Saved!!");
 
@@ -39,7 +40,8 @@ const Todo = () => {
       description: '',
       reminderDate: '',
       reminderTime: '',
-      priority: ''
+      priority: '',
+      completed: false,
     });
   };
 
@@ -47,12 +49,32 @@ const Todo = () => {
     setTodos((prevTodos) => prevTodos.filter((_, index) => index !== id));
   };
 
+  const updateTodo = (updatedTodo) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo, index) =>
+        index === updatedTodo.id ? updatedTodo : todo
+      )
+    );
+  };
+
+  const toggleComplete = (id) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo, index) =>
+        index === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
   return (
     <>
       <div className='todo d-flex flex-column align-items-center'>
         <ToastContainer />
         <div className='todo-main container'>
+        
           <div className='todo-inputs-div mx-auto my-4 p-4 rounded shadow-sm'>
+          <h2 className="create-heading">
+  📝               Create New Todo
+                  </h2>
             <input
               type='text'
               name='title'
@@ -108,18 +130,26 @@ const Todo = () => {
           <div className='row align-items-start'>
             {todos.map((todo, index) => (
               <div className='col-12 col-sm-6 col-md-4 col-lg-3 mb-4' key={index}>
-                <Todocard todo={todo} id={index} delid={del} />
+             <Todocard
+               todo={{ ...todo, id: index }}
+                delid={del}
+                editTodo={() => setSelectedTodo({ ...todo, id: index })}
+                toggleComplete={toggleComplete}
+                 />
+
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className='todo-update'>
-        <div className="container update">
-          <Update />
-        </div>
-      </div>
+      {selectedTodo && (
+        <Update
+          selectedTodo={selectedTodo}
+          updateTodo={updateTodo}
+          closeUpdate={() => setSelectedTodo(null)}
+        />
+      )}
     </>
   );
 };
