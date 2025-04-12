@@ -1,17 +1,21 @@
+/* General Todo Container */
 .todo {
   width: 100%;
   min-height: 100vh;
-  max-height: auto;
   background-color: white;
-  position: relative;
 }
 
+/* Input Form Styling */
 .todo-inputs-div {
   background-color: whitesmoke;
   max-width: 500px;
   box-shadow: rgba(0, 0, 0, 0.36) 0px 5px 15px;
+  padding: 1.5rem;
+  margin: 0 auto;
+  border-radius: 8px;
 }
 
+/* Inputs and Select */
 .todo-inputs-div input,
 .todo-inputs-div textarea,
 .todo-inputs-div select {
@@ -19,6 +23,7 @@
   border-radius: 6px;
   border: 1px solid #ced4da;
   outline: none;
+  width: 100%;
 }
 
 /* Make description textarea visible */
@@ -27,6 +32,7 @@
   resize: vertical;
 }
 
+/* Add Todo Button */
 .add-btn {
   color: white;
   border: none;
@@ -37,27 +43,21 @@
   background-color: rgba(240, 0, 0, 0.87);
 }
 
+/* Todo Card Styles */
 .todo-cards {
   border: 1px solid black;
   border-radius: 10px;
   background-color: #fff;
   word-wrap: break-word;
-  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-}
-
-
-.todo-card-p {
-  text-align: justify;
-  text-justify: inter-word;
-  font-size:25px;
+  height: auto;
+  padding: 1rem;
   margin-bottom: 1rem;
-  padding-right: 4px;
-  white-space: pre-wrap; /* handle long unbroken content */
 }
 
+/* Priority Pill Styles */
 .priority-pill {
   display: inline-block;
   padding: 4px 10px;
@@ -80,28 +80,84 @@
   background-color: #e0f7e0;
   color: #007a00;
 }
-.card-icons-del{
-  font-size:18px;
+
+/* Card Icons */
+.card-icons-del {
+  font-size: 18px;
   cursor: pointer;
   color: red;
 }
 
-.card-icons-edit{
-  font-size:18px;
+.card-icons-edit {
+  font-size: 18px;
   cursor: pointer;
 }
 
-.todo-update{
-  width: 100%;
-  height: 80vh;
-  position: absolute;
-  position: fixed;
-  top: 80px;
-  left: 0px;
-  background-color: blanchedalmond;
-  display: none;
+/* Checkbox for TodoCard */
+.card-checkbox {
+  margin-left: 10px;
+  transform: scale(1.2);
+  accent-color: green;
 }
 
-.update{
+/* Completed Card */
+.completed {
+  border-left: 5px solid green;
+  opacity: 0.8;
+}
+
+/* Full-screen Update Modal */
+.update-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Update Box */
+.update-box {
+  background-color: #fff;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+/* Orange Update Button */
+.btn-warning {
+  background-color: #ff7300;
+  border: none;
+}
+
+.btn-warning:hover {
+  background-color: #e36200;
+}
+
+/* Orange Themed Create Heading */
+.create-heading,
+.update-heading {
+  background: linear-gradient(to right, #ff7300, #ffa726);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 2.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Underline bar for heading */
+.create-underline,
+.update-underline {
+  width: 60px;
+  height: 4px;
+  background-color: #ffa726;
+  margin: 0.4rem auto;
+  border-radius: 8px;
 }
