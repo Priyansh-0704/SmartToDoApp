@@ -13,3 +13,7 @@
     color: white !important;
     font-weight: bold;
 }
+.navbar-toggler {
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05); /* Light background for visibility */
+  }

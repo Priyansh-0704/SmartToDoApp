@@ -1,10 +1,18 @@
 import React from "react";
 import "./navbar.css";
-import { RiContactsBook2Fill} from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { GiWhiteBook } from "react-icons/gi";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { authActions } from "../../store";
 
 const Navbar = () => {
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    const dispatch = useDispatch();
+    const Logout = () => {
+        sessionStorage.removeItem('userId');
+        dispatch(authActions.logout());    
+    }
     return (
         <div><nav className="navbar navbar-expand-lg">
             <div className="container">
@@ -28,22 +36,23 @@ const Navbar = () => {
                         <li className="nav-item mx-2">
                             <Link className="nav-link active" aria-current="page" to="/todo">Todo</Link>
                         </li>
-
-                        <li className="nav-item mx-2">
+                        {!isLoggedIn && <>  <li className="nav-item mx-2">
                             <Link className="nav-link active btn-nav" aria-current="page" to="/signup">Sign Up</Link>
                         </li>
 
                         <li className="nav-item mx-2">
                             <Link className="nav-link active btn-nav" aria-current="page" to="/signin">Sign In</Link>
-                        </li>
-
-                        <li className="nav-item mx-2">
+                        </li></>}
+                        {isLoggedIn && <> <li className="nav-item mx-2" onClick={Logout}>
                             <Link className="nav-link active btn-nav" aria-current="page" to="#">Log Out</Link>
-                        </li>
+                        </li> </>}
                     </ul>
                 </div>
             </div>
-        </nav></div>
+ 
+        </nav>
+         
+        </div>
     );
 };
 
