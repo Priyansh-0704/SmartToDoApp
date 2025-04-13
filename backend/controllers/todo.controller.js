@@ -6,12 +6,12 @@ import moment from "moment-timezone";
 
 export async function createTodo(req, res) {
   try {
-    const { title, description, completed, reminderDate, reminderTime, priority, username } = req.body;
+    const { title, description, completed, reminderDate, reminderTime, priority, id } = req.body;
 
     if (!title || !description) {
       return res.status(400).json({ message: "Title and description are required" });
     }
-    const user = await User.findOne({ username });
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -20,8 +20,8 @@ export async function createTodo(req, res) {
     let formattedReminderTime = null;
 
     if (reminderDate && reminderTime) {
-      const combinedDateTime = moment.tz(`${reminderDate} ${reminderTime}`, "DD/MM/YYYY HH:mm", "Asia/Kolkata");
-      formattedReminderDate = combinedDateTime.format("DD/MM/YYYY");
+      const combinedDateTime = moment.tz(`${reminderDate} ${reminderTime}`, "YYYY-MM-DD HH:mm", "Asia/Kolkata");
+      formattedReminderDate = combinedDateTime.format("YYYY-MM-DD");
       formattedReminderTime = combinedDateTime.format("HH:mm");
     }
 
@@ -78,8 +78,8 @@ export async function updateTodo(req, res) {
     let formattedReminderTime = null;
 
     if (reminderDate && reminderTime) {
-      const combinedDateTime = moment.tz(`${reminderDate} ${reminderTime}`, "DD/MM/YYYY HH:mm", "Asia/Kolkata");
-      formattedReminderDate = combinedDateTime.format("DD/MM/YYYY");
+      const combinedDateTime = moment.tz(`${reminderDate} ${reminderTime}`, "YYYY-MM-DD HH:mm", "Asia/Kolkata");
+      formattedReminderDate = combinedDateTime.format("YYYY-MM-DD");
       formattedReminderTime = combinedDateTime.format("HH:mm");
     }
 

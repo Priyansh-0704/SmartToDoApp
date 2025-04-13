@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import './Todo.css';
+import React, { useState, useEffect } from "react";
+import 'react-toastify/dist/ReactToastify.css';
+import Update from './Update';
 import Todocard from './Todocard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Update from './Update';
+import { useDispatch } from 'react-redux';
+import { authActions } from '../../store';
+import axios from 'axios';
+
+let id = sessionStorage.getItem("userId");
 
 const Todo = () => {
   const [formData, setFormData] = useState({
@@ -23,7 +28,7 @@ const Todo = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     const { title, description, reminderDate, reminderTime, priority } = formData;
 
     if (!title || !description || !reminderDate || !reminderTime || !priority) {
@@ -31,18 +36,43 @@ const Todo = () => {
       return;
     }
 
-    setTodos((prevTodos) => [...prevTodos, formData]);
-    toast.success("Your Task is Added!");
-    toast.error("Your Task is Not Saved!!");
+    const username = sessionStorage.getItem("userId");
+    if (!username) {
+      toast.error("You are not logged in. Please login first!");
+      return;
+    }
 
-    setFormData({
-      title: '',
-      description: '',
-      reminderDate: '',
-      reminderTime: '',
-      priority: '',
-      completed: false,
-    });
+    try {
+      const response = await axios.post("http://localhost:5000/api/v2/todo/create", {
+        title,
+        description,
+        completed: false,
+        reminderDate,
+        reminderTime,
+        priority,
+        id
+      });
+
+      if (response.status === 201) {
+        toast.success("Your Task is Added and Email Sent! ✅");
+
+        setTodos((prevTodos) => [...prevTodos, response.data.todo]);
+
+        setFormData({
+          title: '',
+          description: '',
+          reminderDate: '',
+          reminderTime: '',
+          priority: '',
+          completed: false,
+        });
+      } else {
+        toast.error("Failed to add task. Try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Something went wrong while saving the task.");
+    }
   };
 
   const del = (id) => {
