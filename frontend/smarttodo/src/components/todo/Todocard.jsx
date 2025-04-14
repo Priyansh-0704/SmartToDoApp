@@ -3,7 +3,7 @@ import { AiFillDelete } from 'react-icons/ai';
 import { GrDocumentUpdate } from 'react-icons/gr';
 
 const Todocard = ({ todo, delid, editTodo, toggleComplete }) => {
-  const { title, description, reminderDate, reminderTime, priority, completed, id } = todo;
+  const { title, description, reminderDate, reminderTime, priority, completed, _id } = todo;
 
   return (
     <div className={`card shadow-sm h-100 todo-cards ${completed ? 'completed' : ''}`}>
@@ -25,17 +25,20 @@ const Todocard = ({ todo, delid, editTodo, toggleComplete }) => {
             className="form-check-input"
             type="checkbox"
             checked={completed}
-            onChange={() => toggleComplete(id)}
-            id={`check${id}`}
+            onChange={() => toggleComplete(_id)}  
+            id={`check${_id}`}
           />
-          <label className="form-check-label" htmlFor={`check${id}`}>
+          <label className="form-check-label" htmlFor={`check${_id}`}>
             {completed ? "Completed" : "Mark as Completed"}
           </label>
         </div>
       </div>
       <div className='d-flex justify-content-between align-items-center p-2'>
-        <GrDocumentUpdate className='card-icons-edit' onClick={editTodo} />
-        <AiFillDelete className='card-icons-del' onClick={() => delid(id)} />
+        <GrDocumentUpdate
+          className='card-icons-edit'
+          onClick={() => editTodo(todo)}
+        />
+        <AiFillDelete className='card-icons-del' onClick={() => delid(_id)} />
       </div>
     </div>
   );
