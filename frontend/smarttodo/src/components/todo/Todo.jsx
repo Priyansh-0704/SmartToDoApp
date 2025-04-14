@@ -17,24 +17,30 @@ const Todo = () => {
 
   const [todos, setTodos] = useState([]);
   const [selectedTodo, setSelectedTodo] = useState(null);
+  const [localIdCounter, setLocalIdCounter] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
 
-  const id = sessionStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
 
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v2/todo/getTask/${id}`);
-        setTodos(response.data); 
+        const response = await axios.get(`http://localhost:5000/api/v2/todo/getTask/${userId}`);
+        setTodos(response.data);
       } catch (error) {
         console.log("Error fetching todos:", error);
-        toast.error("Failed to fetch todos.");
+        toast.error("Failed to fetch todos.", {
+          toastId: 'fetch-todo-error'
+        });
       }
     };
 
-    if (id) {
-      fetchTodos(); 
+    if (userId) {
+      fetchTodos();
+    } else {
+      setTodos([]);
     }
-  }, [id]);
+  }, [userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,61 +55,148 @@ const Todo = () => {
       return;
     }
 
-    if (!id) {
-      toast.error("You are not logged in. Your todo will not be saved in the database.");
-      return;
-    }
+    setIsAdding(true);
 
-    const todoData = {
+    const newTodo = {
       title,
       description,
       completed: false,
       reminderDate,
       reminderTime,
       priority,
-      id,
     };
 
-    try {
-      const response = await axios.post("http://localhost:5000/api/v2/todo/create", todoData);
-      if (response.status === 201) {
-        toast.success("Your task has been added!");
-        setTodos((prevTodos) => [...prevTodos, response.data.todo]);
-        setFormData({
-          title: '',
-          description: '',
-          reminderDate: '',
-          reminderTime: '',
-          priority: '',
-          completed: false,
+    if (!userId) {
+      const localTodo = { ...newTodo, _id: `local-${localIdCounter}` };
+      setLocalIdCounter((prev) => prev + 1);
+      setTodos((prev) => [localTodo, ...prev]);
+      toast.info("Todo added locally (not saved)");
+    } else {
+      try {
+        const response = await axios.post("http://localhost:5000/api/v2/todo/create", {
+          ...newTodo,
+          id: userId,
         });
+
+        if (response.status === 201) {
+          toast.success("Todo saved!");
+          setTodos((prev) => [response.data.todo, ...prev]);
+        } else {
+          toast.error("Failed to save todo.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        toast.error("Something went wrong.");
+      }
+    }
+
+    setFormData({
+      title: '',
+      description: '',
+      reminderDate: '',
+      reminderTime: '',
+      priority: '',
+      completed: false,
+    });
+
+    setIsAdding(false);
+  };
+
+  const del = async (todoId) => {
+    if (todoId.startsWith("local-")) {
+      toast.warn("You can't delete local todos.");
+      return;
+    }
+
+    try {
+      toast.info("Todo is getting deleted...", {
+        autoClose: 2000,
+        toastId: `deleting-${todoId}`
+      });
+
+      const res = await axios.delete(`http://localhost:5000/api/v2/todo/delete/${todoId}`, {
+        data: { id: userId },
+      });
+
+      if (res.status === 200) {
+        setTodos((prev) => prev.filter((todo) => todo._id !== todoId));
+        toast.success("Todo deleted!");
       } else {
-        toast.error("Failed to add task. Try again.");
+        toast.error("Failed to delete todo");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Something went wrong while saving the task.");
+      toast.error("Failed to delete todo");
     }
   };
 
-  const del = (id) => {
-    setTodos((prevTodos) => prevTodos.filter((_, index) => index !== id));
+  const updateTodo = async (updatedTodo) => {
+    const userId = sessionStorage.getItem("userId");
+
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/v2/todo/update/${updatedTodo._id}`,
+        {
+          ...updatedTodo,
+          userId,
+        }
+      );
+
+      if (res.status === 200) {
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo._id === updatedTodo._id ? { ...todo, ...updatedTodo } : todo
+          )
+        );
+        toast.success("Todo updated successfully!");
+        setSelectedTodo(null);
+      } else {
+        toast.error("Failed to update todo.");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error("An error occurred while updating the todo.");
+    }
   };
 
-  const updateTodo = (updatedTodo) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo, index) =>
-        index === updatedTodo.id ? updatedTodo : todo
-      )
-    );
+  const toggleComplete = async (id) => {
+    if (id.startsWith("local-")) {
+      toast.error("Please sign in to update your todo.", {
+        toastId: `toggle-error-${id}`,
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.patch(`http://localhost:5000/api/v2/todo/toggleCompletion/${id}`);
+      if (response.status === 200) {
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo._id === id ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
+        toast.success("Todo status updated!");
+      } else {
+        toast.error("Failed to update Todo status.");
+      }
+    } catch (error) {
+      console.error("Error updating Todo:", error);
+      toast.error("An error occurred while updating the Todo.");
+    }
   };
 
-  const toggleComplete = (id) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo, index) =>
-        index === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+
+  const editTodo = (todo) => {
+    const userId = sessionStorage.getItem("userId");
+
+    if (!userId) {
+      toast.error("Please sign in to update your todo.", {
+        toastId: 'update-todo-error'
+      });
+      return;
+    }
+
+    setSelectedTodo(todo); // Allow editing if user is logged in
   };
 
   return (
@@ -113,6 +206,7 @@ const Todo = () => {
         <div className='todo-main container'>
           <div className='todo-inputs-div mx-auto my-4 p-4 rounded shadow-sm'>
             <h2 className="create-heading">📝 Create New Todo</h2>
+
             <input
               type='text'
               name='title'
@@ -136,6 +230,7 @@ const Todo = () => {
               className='form-control mb-3'
               value={formData.reminderDate}
               onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
             />
 
             <input
@@ -158,24 +253,36 @@ const Todo = () => {
               <option value='low'>Low</option>
             </select>
 
-            <button className='btn w-100 add-btn' onClick={handleAddTodo}>
-              Add Todo
+            <button className='btn w-100 add-btn' onClick={handleAddTodo} disabled={isAdding}>
+              {isAdding ? <div className="spinner"></div> : "Add Todo"}
             </button>
+
+            {!userId && (
+              <div className="text-muted text-center mt-2">
+                Not signed in — your todos won't be saved.
+              </div>
+            )}
           </div>
         </div>
 
         <div className='todo-body container'>
           <div className='row align-items-start'>
-            {todos.map((todo, index) => (
-              <div className='col-12 col-sm-6 col-md-4 col-lg-3 mb-4' key={todo._id}>
-                <Todocard
-                  todo={{ ...todo, id: index }}
-                  delid={del}
-                  editTodo={() => setSelectedTodo({ ...todo, id: index })}
-                  toggleComplete={toggleComplete}
-                />
-              </div>
-            ))}
+            {todos && Array.isArray(todos) && todos.length > 0 ? (
+              todos.map((todo) => (
+                todo && todo._id ? (
+                  <div className='col-12 col-sm-6 col-md-4 col-lg-3 mb-4' key={todo._id}>
+                    <Todocard
+                      todo={{ ...todo, id: todo._id }}
+                      delid={del}
+                      editTodo={editTodo} // Updated to call editTodo
+                      toggleComplete={toggleComplete}
+                    />
+                  </div>
+                ) : null
+              ))
+            ) : (
+              <div>No todos found.</div>
+            )}
           </div>
         </div>
       </div>
