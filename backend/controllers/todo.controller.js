@@ -11,7 +11,7 @@ export async function createTodo(req, res) {
     if (!title || !description) {
       return res.status(400).json({ message: "Title and description are required" });
     }
-    
+
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -29,15 +29,15 @@ export async function createTodo(req, res) {
     const todo = new Todo({
       title,
       description,
-      completed: completed || false,
+      completed: completed !== undefined ? completed : false,
       reminderDate: formattedReminderDate,
       reminderTime: formattedReminderTime,
       priority: priority || "medium",
-      user: user._id, 
+      user: user._id,
     });
 
     const savedTodo = await todo.save();
-    user.list.push(savedTodo._id); 
+    user.list.push(savedTodo._id);
     await user.save();
 
     const emailSubject = `📌 New Todo Created: ${savedTodo.title}`;
@@ -59,17 +59,18 @@ export async function createTodo(req, res) {
 
     res.status(201).json({ message: "Todo created and email sent!", todo: savedTodo });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
 
 // Update Todo
+
+
 export async function updateTodo(req, res) {
   try {
-    const { title, description, completed, reminderDate, reminderTime, priority, username } = req.body;
+    const { title, description, completed, reminderDate, reminderTime, priority, userId } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findById(userId); 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -113,27 +114,33 @@ export async function updateTodo(req, res) {
 
     res.status(200).json({ message: "Todo updated and email sent!", todo: updatedTodo });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
 
+
+
 // Delete Todo
 export async function deleteTodo(req, res) {
   try {
-    const { username } = req.body;
-    const user = await User.findOne({ username });
+    const { id: userId } = req.body;
+    const todoId = req.params.id;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { list: todoId } },
+      { new: true }
+    );
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const todo = await Todo.findByIdAndDelete(req.params.id);
+    const todo = await Todo.findByIdAndDelete(todoId);
+
     if (!todo) {
       return res.status(404).json({ message: "Todo not found" });
     }
-
-    user.list = user.list.filter(todoId => todoId.toString() !== req.params.id); 
-    await user.save();
 
     const emailSubject = `❌ Todo Deleted: ${todo.title}`;
     const emailBody = `
@@ -144,14 +151,13 @@ export async function deleteTodo(req, res) {
       📝 Title: ${todo.title}
       📄 Description: ${todo.description}
 
-      If this was a mistake, create a new one! 🚀
+      If this was a mistake, feel free to create a new one! 🚀
     `;
 
     await sendEmail(user.email, emailSubject, emailBody);
 
     res.status(200).json({ message: "Todo deleted and email sent!" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -163,18 +169,36 @@ export async function getTask(req, res) {
     const filter = { user: req.params.id };
 
     if (priority) {
-      filter.priority = new RegExp(`^${priority}$`, "i"); 
+      filter.priority = new RegExp(`^${priority}$`, "i");
     }
 
-    const tasks = await Todo.find(filter).sort({ createdAt: -1 }); 
+    const tasks = await Todo.find(filter).sort({ createdAt: -1 });
 
     if (!tasks.length) {
       return res.status(404).json({ message: "No tasks found" });
     }
 
-    return res.status(200).json(tasks); 
+    return res.status(200).json(tasks);
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+// Toggle Complete
+export async function toggleComplete(req, res) {
+  try {
+    const { id } = req.params;
+
+    const todo = await Todo.findById(id);
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    todo.completed = !todo.completed;
+    await todo.save();
+
+    return res.status(200).json({ message: "Todo status updated successfully", todo });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
   }
 }
