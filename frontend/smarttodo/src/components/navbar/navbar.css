@@ -1,19 +1,59 @@
 .user-png {
     width: 50px;
     height: 30px;
-}
-
-.navbar-brand {
-    color: red;
-}
-
-.btn-nav {
+    object-fit: contain;
+  }
+  
+  .navbar-brand {
+    color: #e60000; /* deeper red for better contrast */
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+  
+  .btn-nav {
     background-color: rgba(240, 0, 0, 0.87);
     border-radius: 5px;
     color: white !important;
     font-weight: bold;
-}
-.navbar-toggler {
-    border: none;
-    background-color: rgba(0, 0, 0, 0.05); /* Light background for visibility */
+    padding: 6px 14px;
+    transition: background-color 0.3s ease;
+    max-width: 150px;  /* ✅ Add this */
+    width: 100%;
+    text-align: center;
+    display: block; /* To center nicely */
+    margin: 5px 0;    /* Some spacing */
+  }  
+  
+  .btn-nav:hover {
+    background-color: rgba(200, 0, 0, 0.87);
   }
+  
+  .navbar-toggler {
+    border: none;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navbar-toggler:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  
+  /* Responsive Enhancements */
+  @media (max-width: 576px) {
+    .user-png {
+      width: 40px;
+      height: 25px;
+    }
+  
+    .navbar-brand {
+      font-size: 1.1rem;
+    }
+  
+    .btn-nav {
+      font-size: 0.9rem;
+      padding: 5px 10px;
+    }
+  }  

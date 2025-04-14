@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./navbar.css";
 import { Link } from "react-router-dom";
 import { GiWhiteBook } from "react-icons/gi";
@@ -11,50 +11,63 @@ const Navbar = () => {
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [isOpen, setIsOpen] = useState(false); // 👈 controls collapse
+
     const Logout = () => {
         sessionStorage.removeItem('userId');
         dispatch(authActions.logout());   
         navigate("/"); 
-    }
+        setIsOpen(false); // 👈 collapse after logout
+    };
+
+    const closeNavbar = () => setIsOpen(false); // 👈 helper to close on click
+
     return (
-        <div><nav className="navbar navbar-expand-lg">
-            <div className="container">
-                <Link className="navbar-brand" to="/">
-                    <b><GiWhiteBook /> &nbsp; todo</b>
-                </Link>
+        <div>
+            <nav className="navbar navbar-expand-lg">
+                <div className="container">
+                    <Link className="navbar-brand" to="/" onClick={closeNavbar}>
+                        <b><GiWhiteBook /> &nbsp; todo</b>
+                    </Link>
 
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li className="nav-item mx-2">
-                            <Link className="nav-link active" aria-current="page" to="/">Home</Link>
-                        </li>
+                    <button className="navbar-toggler" type="button" onClick={() => setIsOpen(!isOpen)}>
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
 
-                        <li className="nav-item mx-2">
-                            <Link className="nav-link active" aria-current="page" to="/about">About Us</Link>
-                        </li>
+                    <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`} id="navbarSupportedContent">
+                        <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <li className="nav-item mx-2">
+                                <Link className="nav-link active" to="/" onClick={closeNavbar}>Home</Link>
+                            </li>
 
-                        <li className="nav-item mx-2">
-                            <Link className="nav-link active" aria-current="page" to="/todo">Todo</Link>
-                        </li>
-                        {!isLoggedIn && <>  <li className="nav-item mx-2">
-                            <Link className="nav-link active btn-nav" aria-current="page" to="/signup">Sign Up</Link>
-                        </li>
+                            <li className="nav-item mx-2">
+                                <Link className="nav-link active" to="/about" onClick={closeNavbar}>About Us</Link>
+                            </li>
 
-                        <li className="nav-item mx-2">
-                            <Link className="nav-link active btn-nav" aria-current="page" to="/signin">Sign In</Link>
-                        </li></>}
-                        {isLoggedIn && <> <li className="nav-item mx-2" onClick={Logout}>
-                            <Link className="nav-link active btn-nav" aria-current="page" to="#">Log Out</Link>
-                        </li> </>}
-                    </ul>
+                            <li className="nav-item mx-2">
+                                <Link className="nav-link active" to="/todo" onClick={closeNavbar}>Todo</Link>
+                            </li>
+
+                            {!isLoggedIn && <>
+                                <li className="nav-item mx-2">
+                                    <Link className="nav-link active btn-nav" to="/signup" onClick={closeNavbar}>Sign Up</Link>
+                                </li>
+
+                                <li className="nav-item mx-2">
+                                    <Link className="nav-link active btn-nav" to="/signin" onClick={closeNavbar}>Sign In</Link>
+                                </li>
+                            </>}
+
+                            {isLoggedIn && <>
+                                <li className="nav-item mx-2">
+                                    <Link className="nav-link active btn-nav" to="#" onClick={Logout}>Log Out</Link>
+                                </li>
+                            </>}
+                        </ul>
+                    </div>
                 </div>
-            </div>
- 
-        </nav>
-         
+            </nav>
         </div>
     );
 };

@@ -1,17 +1,56 @@
-.home{
+.home { 
     width: 100%;
     height: 100vh;
-}
-
-.home h1{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .home h1 {
     font-size: 60px;
-}
-
-.home-btn{
+    margin-bottom: 20px;
+  }
+  
+  /* Responsive Button */
+  .home-btn {
     border: none;
     outline: none;
     background-color: rgba(240, 0, 0, 0.87);
     border-radius: 5px;
     color: white !important;
     font-weight: bold;
-}
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Hover Effect */
+  .home-btn:hover {
+    background-color: rgba(200, 0, 0, 0.87);
+  }
+  
+  /* Responsive Enhancements */
+  @media (max-width: 768px) {
+    .home h1 {
+      font-size: 40px;
+    }
+  
+    .home-btn {
+      font-size: 1rem;
+      padding: 10px 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .home h1 {
+      font-size: 28px;
+    }
+  
+    .home-btn {
+      font-size: 0.9rem;
+      padding: 8px 18px;
+    }
+  }  
