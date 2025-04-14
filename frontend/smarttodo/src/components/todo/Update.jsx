@@ -18,16 +18,24 @@ const Update = ({ selectedTodo, updateTodo, closeUpdate }) => {
   };
 
   const handleUpdate = () => {
+    if (
+      !updatedTodo.title ||
+      !updatedTodo.description ||
+      !updatedTodo.reminderDate ||
+      !updatedTodo.reminderTime ||
+      !updatedTodo.priority
+    ) {
+      toast.error("Please fill out all fields!");
+      return;
+    }
     updateTodo(updatedTodo);
-    toast.success("Your Task is Updated!");
-    closeUpdate();
   };
 
   return (
     <div className="update-overlay">
       <div className="update-box p-4 shadow">
         <h2 className="todo-heading text-center mb-4">
-          <span className="icon">🛠️</span> Update Your Todo
+          <span className="icon">🛠</span> Update Your Todo
           <div className="underline"></div>
         </h2>
 
@@ -52,14 +60,18 @@ const Update = ({ selectedTodo, updateTodo, closeUpdate }) => {
           name="reminderDate"
           value={updatedTodo.reminderDate}
           onChange={handleChange}
+          min={new Date().toISOString().split("T")[0]}
         />
+
         <input
           type="time"
           className="form-control mb-3"
           name="reminderTime"
           value={updatedTodo.reminderTime}
           onChange={handleChange}
+          min={new Date().toTimeString().split(" ")[0].substring(0, 5)}
         />
+
         <select
           className="form-select mb-3"
           name="priority"
@@ -76,7 +88,10 @@ const Update = ({ selectedTodo, updateTodo, closeUpdate }) => {
           <button className="btn btn-secondary" onClick={closeUpdate}>
             Cancel
           </button>
-          <button className="btn btn-warning text-white fw-bold" onClick={handleUpdate}>
+          <button
+            className="btn btn-warning text-white fw-bold"
+            onClick={handleUpdate}
+          >
             Update
           </button>
         </div>
@@ -85,4 +100,4 @@ const Update = ({ selectedTodo, updateTodo, closeUpdate }) => {
   );
 };
 
-export default Update;
+export default Update
