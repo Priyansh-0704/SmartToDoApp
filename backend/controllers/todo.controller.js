@@ -2,8 +2,8 @@ import Todo from "../models/todo.models.js";
 import User from "../models/user.models.js";
 import { sendEmail } from "../utils/emailservices.js";
 import moment from "moment-timezone";
-// create todo
 
+// Create Todo
 export async function createTodo(req, res) {
   try {
     const { title, description, completed, reminderDate, reminderTime, priority, id } = req.body;
@@ -11,6 +11,7 @@ export async function createTodo(req, res) {
     if (!title || !description) {
       return res.status(400).json({ message: "Title and description are required" });
     }
+    
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -32,11 +33,11 @@ export async function createTodo(req, res) {
       reminderDate: formattedReminderDate,
       reminderTime: formattedReminderTime,
       priority: priority || "medium",
-      user: user._id,
+      user: user._id, 
     });
 
     const savedTodo = await todo.save();
-    user.list.push(savedTodo);
+    user.list.push(savedTodo._id); 
     await user.save();
 
     const emailSubject = `📌 New Todo Created: ${savedTodo.title}`;
@@ -54,7 +55,6 @@ export async function createTodo(req, res) {
       Stay productive! 🚀
     `;
 
-    console.log({ subject: emailSubject, body: emailBody });
     await sendEmail(user.email, emailSubject, emailBody);
 
     res.status(201).json({ message: "Todo created and email sent!", todo: savedTodo });
@@ -63,8 +63,8 @@ export async function createTodo(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
-// update todo
 
+// Update Todo
 export async function updateTodo(req, res) {
   try {
     const { title, description, completed, reminderDate, reminderTime, priority, username } = req.body;
@@ -109,7 +109,6 @@ export async function updateTodo(req, res) {
       Keep up the great work! 🚀
     `;
 
-    console.log({ subject: emailSubject, body: emailBody });
     await sendEmail(user.email, emailSubject, emailBody);
 
     res.status(200).json({ message: "Todo updated and email sent!", todo: updatedTodo });
@@ -118,7 +117,8 @@ export async function updateTodo(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
-// delete todo
+
+// Delete Todo
 export async function deleteTodo(req, res) {
   try {
     const { username } = req.body;
@@ -131,7 +131,8 @@ export async function deleteTodo(req, res) {
     if (!todo) {
       return res.status(404).json({ message: "Todo not found" });
     }
-    user.list = user.list.filter(todoId => todoId.toString() !== req.params.id);
+
+    user.list = user.list.filter(todoId => todoId.toString() !== req.params.id); 
     await user.save();
 
     const emailSubject = `❌ Todo Deleted: ${todo.title}`;
@@ -146,7 +147,6 @@ export async function deleteTodo(req, res) {
       If this was a mistake, create a new one! 🚀
     `;
 
-    console.log({ subject: emailSubject, body: emailBody });
     await sendEmail(user.email, emailSubject, emailBody);
 
     res.status(200).json({ message: "Todo deleted and email sent!" });
@@ -155,23 +155,24 @@ export async function deleteTodo(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
-// get task by user id and filter by priority
+
+// Get Task by User ID and Filter by Priority
 export async function getTask(req, res) {
   try {
     const { priority } = req.query;
     const filter = { user: req.params.id };
 
     if (priority) {
-      filter.priority = new RegExp(`^${priority}$`, "i");
+      filter.priority = new RegExp(`^${priority}$`, "i"); 
     }
 
-    const tasks = await Todo.find(filter).sort({ createdAt: -1 });
+    const tasks = await Todo.find(filter).sort({ createdAt: -1 }); 
 
     if (!tasks.length) {
       return res.status(404).json({ message: "No tasks found" });
     }
 
-    return res.status(200).json(tasks);
+    return res.status(200).json(tasks); 
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
