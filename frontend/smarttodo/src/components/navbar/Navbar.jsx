@@ -5,13 +5,16 @@ import { GiWhiteBook } from "react-icons/gi";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../store";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const Logout = () => {
         sessionStorage.removeItem('userId');
-        dispatch(authActions.logout());    
+        dispatch(authActions.logout());   
+        navigate("/"); 
     }
     return (
         <div><nav className="navbar navbar-expand-lg">
