@@ -3,12 +3,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Update from './Update';
 import Todocard from './Todocard';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useDispatch } from 'react-redux';
-import { authActions } from '../../store';
 import axios from 'axios';
-
-let id = sessionStorage.getItem("userId");
 
 const Todo = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +18,24 @@ const Todo = () => {
   const [todos, setTodos] = useState([]);
   const [selectedTodo, setSelectedTodo] = useState(null);
 
+  const id = sessionStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v2/todo/getTask/${id}`);
+        setTodos(response.data); 
+      } catch (error) {
+        console.log("Error fetching todos:", error);
+        toast.error("Failed to fetch todos.");
+      }
+    };
+
+    if (id) {
+      fetchTodos(); 
+    }
+  }, [id]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -36,28 +49,26 @@ const Todo = () => {
       return;
     }
 
-    const username = sessionStorage.getItem("userId");
-    if (!username) {
-      toast.error("You are not logged in. Please login first!");
+    if (!id) {
+      toast.error("You are not logged in. Your todo will not be saved in the database.");
       return;
     }
 
+    const todoData = {
+      title,
+      description,
+      completed: false,
+      reminderDate,
+      reminderTime,
+      priority,
+      id,
+    };
+
     try {
-      const response = await axios.post("http://localhost:5000/api/v2/todo/create", {
-        title,
-        description,
-        completed: false,
-        reminderDate,
-        reminderTime,
-        priority,
-        id
-      });
-
+      const response = await axios.post("http://localhost:5000/api/v2/todo/create", todoData);
       if (response.status === 201) {
-        toast.success("Your Task is Added and Email Sent! ✅");
-
+        toast.success("Your task has been added!");
         setTodos((prevTodos) => [...prevTodos, response.data.todo]);
-
         setFormData({
           title: '',
           description: '',
@@ -100,11 +111,8 @@ const Todo = () => {
       <div className='todo d-flex flex-column align-items-center'>
         <ToastContainer />
         <div className='todo-main container'>
-        
           <div className='todo-inputs-div mx-auto my-4 p-4 rounded shadow-sm'>
-          <h2 className="create-heading">
-  📝               Create New Todo
-                  </h2>
+            <h2 className="create-heading">📝 Create New Todo</h2>
             <input
               type='text'
               name='title'
@@ -159,14 +167,13 @@ const Todo = () => {
         <div className='todo-body container'>
           <div className='row align-items-start'>
             {todos.map((todo, index) => (
-              <div className='col-12 col-sm-6 col-md-4 col-lg-3 mb-4' key={index}>
-             <Todocard
-               todo={{ ...todo, id: index }}
-                delid={del}
-                editTodo={() => setSelectedTodo({ ...todo, id: index })}
-                toggleComplete={toggleComplete}
-                 />
-
+              <div className='col-12 col-sm-6 col-md-4 col-lg-3 mb-4' key={todo._id}>
+                <Todocard
+                  todo={{ ...todo, id: index }}
+                  delid={del}
+                  editTodo={() => setSelectedTodo({ ...todo, id: index })}
+                  toggleComplete={toggleComplete}
+                />
               </div>
             ))}
           </div>

@@ -22,36 +22,34 @@ const Signin = () => {
 
   const Submit = async (e) => {
     e.preventDefault();
+  
+  
+    if (!inputs.username || !inputs.password) {
+      toast.error("Both fields are required!");
+      return;
+    }
+  
     try {
       const res = await axios.post("http://localhost:5000/api/v1/auth/signin", inputs);
-
+  
       if (res.data.status === "success") {
         toast.success(res.data.message);
-        setInputs({
-          username: "",
-          password: ""
-        });
-
+        setInputs({ username: "", password: "" });
+  
         sessionStorage.setItem('userId', res.data.others._id);
-
         dispatch(authActions.login());
-
-        setTimeout(() => {
-          history("/todo");
-        }, 4000);
-      } else if (res.data.message === "Invalid username or password") {
-        toast.error(res.data.message);
-      } else if (res.data.message === "Username and password are required") {
-        toast.error("All fields are required");
+  
+        // Redirect immediately after a successful sign-in
+        history("/todo");
       } else {
-        toast.error(res.data.message);
+        toast.error(res.data.message || "Something went wrong!");
       }
     } catch (error) {
       toast.error("Something went wrong!");
       console.error(error);
     }
   };
-
+  
   return (
     <div>
       <div className='signup'>
