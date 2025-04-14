@@ -86,8 +86,32 @@ const Todo = () => {
     }
   };
 
-  const del = (id) => {
-    setTodos((prevTodos) => prevTodos.filter((_, index) => index !== id));
+ const del = async (todoId) => {
+    if (todoId.startsWith("local-")) {
+      toast.warn("You can't delete local todos.");
+      return;
+    }
+
+    try {
+      toast.info("Todo is getting deleted...", {
+        autoClose: 2000,
+        toastId: `deleting-${todoId}`
+      });
+
+      const res = await axios.delete(`http://localhost:5000/api/v2/todo/delete/${todoId}`, {
+        data: { id: userId },
+      });
+
+      if (res.status === 200) {
+        setTodos((prev) => prev.filter((todo) => todo._id !== todoId));
+        toast.success("Todo deleted!");
+      } else {
+        toast.error("Failed to delete todo");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Failed to delete todo");
+    }
   };
 
   const updateTodo = (updatedTodo) => {
