@@ -3,6 +3,8 @@
   width: 100%;
   min-height: 100vh;
   background-color: white;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Input Form Styling */
@@ -12,7 +14,12 @@
   box-shadow: rgba(0, 0, 0, 0.36) 0px 5px 15px;
   padding: 1.5rem;
   margin: 0 auto;
-  border-radius: 8px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.todo-inputs-div:hover {
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 8px 20px;
 }
 
 /* Inputs and Select */
@@ -24,9 +31,11 @@
   border: 1px solid #ced4da;
   outline: none;
   width: 100%;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
-/* Make description textarea visible */
+/* Description textarea */
 .description-textarea {
   min-height: 100px;
   resize: vertical;
@@ -41,29 +50,102 @@
   cursor: pointer;
   font-weight: bold;
   background-color: rgba(240, 0, 0, 0.87);
+  transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+  background-color: rgb(200, 0, 0);
+}
+
+.add-btn[disabled] {
+  background-color: #ccc !important;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Create / Update Heading */
+.create-heading,
+.update-heading {
+  background: linear-gradient(to right, #ff7300, #ffa726);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.create-underline,
+.update-underline {
+  width: 60px;
+  height: 4px;
+  background-color: #ffa726;
+  margin: 0.4rem auto;
+  border-radius: 8px;
 }
 
 /* Todo Card Styles */
 .todo-cards {
-  border: 1px solid black;
-  border-radius: 10px;
+  position: relative;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
   background-color: #fff;
   word-wrap: break-word;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   height: auto;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: fadeInCard 0.5s ease forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 12px;
+}
+
+.todo-cards:hover {
+  transform: translateY(-5px);
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 25px;
+}
+
+/* Card fade in animation */
+@keyframes fadeInCard {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Glow pulse on hover */
+.todo-cards:hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.1);
+  animation: glowPulse 1.5s infinite;
+  z-index: -1;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 /* Priority Pill Styles */
 .priority-pill {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .priority-pill.high {
@@ -82,15 +164,24 @@
 }
 
 /* Card Icons */
-.card-icons-del {
-  font-size: 18px;
+.card-icons-del,
+.card-icons-edit {
+  font-size: 20px;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.card-icons-del:hover,
+.card-icons-edit:hover {
+  transform: scale(1.2);
+}
+
+.card-icons-del {
   color: red;
 }
 
 .card-icons-edit {
-  font-size: 18px;
-  cursor: pointer;
+  color: #333;
 }
 
 /* Checkbox for TodoCard */
@@ -98,6 +189,11 @@
   margin-left: 10px;
   transform: scale(1.2);
   accent-color: green;
+  transition: transform 0.2s ease;
+}
+
+.card-checkbox:hover {
+  transform: scale(1.4);
 }
 
 /* Completed Card */
@@ -133,39 +229,15 @@
 .btn-warning {
   background-color: #ff7300;
   border: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
 }
 
 .btn-warning:hover {
   background-color: #e36200;
-}
-
-/* Orange Themed Create Heading */
-.create-heading,
-.update-heading {
-  background: linear-gradient(to right, #ff7300, #ffa726);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 700;
-  font-size: 2.5rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-/* Underline bar for heading */
-.create-underline,
-.update-underline {
-  width: 60px;
-  height: 4px;
-  background-color: #ffa726;
-  margin: 0.4rem auto;
-  border-radius: 8px;
-}
-
-.add-btn[disabled] {
-  background-color: #ccc !important;
-  color: #666;
-  cursor: not-allowed;
 }
 
 /* Loader spinner */
@@ -176,10 +248,10 @@
   width: 24px;
   height: 24px;
   animation: spin 2s linear infinite;
+  margin: 1rem auto;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-

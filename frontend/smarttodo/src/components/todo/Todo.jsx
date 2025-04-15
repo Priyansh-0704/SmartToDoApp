@@ -85,7 +85,6 @@ const Todo = () => {
           toast.error("Failed to save todo.");
         }
       } catch (error) {
-        console.error("Error:", error);
         toast.error("Something went wrong.");
       }
     }
@@ -132,7 +131,7 @@ const Todo = () => {
 
   const updateTodo = async (updatedTodo) => {
     const userId = sessionStorage.getItem("userId");
-
+  
     try {
       const res = await axios.put(
         `http://localhost:5000/api/v2/todo/update/${updatedTodo._id}`,
@@ -141,7 +140,7 @@ const Todo = () => {
           userId,
         }
       );
-
+  
       if (res.status === 200) {
         setTodos((prevTodos) =>
           prevTodos.map((todo) =>
@@ -149,7 +148,7 @@ const Todo = () => {
           )
         );
         toast.success("Todo updated successfully!");
-        setSelectedTodo(null);
+        setSelectedTodo(null); 
       } else {
         toast.error("Failed to update todo.");
       }
@@ -161,12 +160,12 @@ const Todo = () => {
 
   const toggleComplete = async (id) => {
     if (id.startsWith("local-")) {
-      toast.error("Please sign in to update your todo.", {
+      toast.error("Please sign in to check ur your todo.", {
         toastId: `toggle-error-${id}`,
       });
       return;
     }
-
+  
     try {
       const response = await axios.patch(`http://localhost:5000/api/v2/todo/toggleCompletion/${id}`);
       if (response.status === 200) {
@@ -184,7 +183,7 @@ const Todo = () => {
       toast.error("An error occurred while updating the Todo.");
     }
   };
-
+  
 
   const editTodo = (todo) => {
     const userId = sessionStorage.getItem("userId");
@@ -196,7 +195,7 @@ const Todo = () => {
       return;
     }
 
-    setSelectedTodo(todo); // Allow editing if user is logged in
+    setSelectedTodo(todo); 
   };
 
   return (
@@ -205,7 +204,8 @@ const Todo = () => {
         <ToastContainer />
         <div className='todo-main container'>
           <div className='todo-inputs-div mx-auto my-4 p-4 rounded shadow-sm'>
-            <h2 className="create-heading">📝 Create New Todo</h2>
+            <h2 className='text-center'>📝 </h2>
+            <h2 className="create-heading"> Create New Todo</h2>
 
             <input
               type='text'
@@ -290,7 +290,7 @@ const Todo = () => {
       {selectedTodo && (
         <Update
           selectedTodo={selectedTodo}
-          updateTodo={updateTodo}
+          updateTodo={updateTodo} 
           closeUpdate={() => setSelectedTodo(null)}
         />
       )}
