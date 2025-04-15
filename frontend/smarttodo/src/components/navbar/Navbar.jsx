@@ -12,16 +12,16 @@ const Navbar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [isOpen, setIsOpen] = useState(false); // 👈 controls collapse
+    const [isOpen, setIsOpen] = useState(false); 
 
     const Logout = () => {
         sessionStorage.removeItem('userId');
-        dispatch(authActions.logout());   
-        navigate("/"); 
-        setIsOpen(false); // 👈 collapse after logout
+        dispatch(authActions.logout());
+        navigate("/"); // Redirect to the home page after logout
+        setIsOpen(false); // Close the navbar if it's open
     };
 
-    const closeNavbar = () => setIsOpen(false); // 👈 helper to close on click
+    const closeNavbar = () => setIsOpen(false);
 
     return (
         <div>
@@ -61,7 +61,7 @@ const Navbar = () => {
 
                             {isLoggedIn && <>
                                 <li className="nav-item mx-2">
-                                    <Link className="nav-link active btn-nav" to="#" onClick={Logout}>Log Out</Link>
+                                    <button className="nav-link active btn-nav" onClick={Logout}>Log Out</button>
                                 </li>
                             </>}
                         </ul>
