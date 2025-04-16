@@ -17,8 +17,8 @@ const Navbar = () => {
     const Logout = () => {
         sessionStorage.removeItem('userId');
         dispatch(authActions.logout());
-        navigate("/"); // Redirect to the home page after logout
-        setIsOpen(false); // Close the navbar if it's open
+        navigate("/"); 
+        setIsOpen(false); 
     };
 
     const closeNavbar = () => setIsOpen(false);
