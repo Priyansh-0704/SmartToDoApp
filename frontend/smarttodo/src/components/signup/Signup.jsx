@@ -23,7 +23,7 @@ const Signup = () => {
   const Submit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://smarttodoapp-9b06.onrender.com//api/v1/auth/signup", inputs);
+      const res = await axios.post("https://smarttodoapp-9b06.onrender.com/api/v1/auth/signup", inputs);
       if (res.data.status === "success") {
         toast.success(res.data.message);
         setInputs({
