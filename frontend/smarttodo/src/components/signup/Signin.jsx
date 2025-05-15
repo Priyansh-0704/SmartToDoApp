@@ -30,7 +30,7 @@ const Signin = () => {
     }
   
     try {
-      const res = await axios.post("http://smarttodoapp-9b06.onrender.com/api/v1/auth/signin", inputs);
+      const res = await axios.post("https://smarttodoapp-9b06.onrender.com/api/v1/auth/signin", inputs);
   
       if (res.data.status === "success") {
         toast.success(res.data.message);
