@@ -25,7 +25,7 @@ const Todo = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get(`https://smarttodoapp-9b06.onrender.com//api/v2/todo/getTask/${userId}`);
+        const response = await axios.get(`https://smarttodoapp-9b06.onrender.com/api/v2/todo/getTask/${userId}`);
         setTodos(response.data);
       } catch (error) {
         console.log("Error fetching todos:", error);
@@ -73,7 +73,7 @@ const Todo = () => {
       toast.info("Todo added locally (not saved)");
     } else {
       try {
-        const response = await axios.post("https://smarttodoapp-9b06.onrender.com//api/v2/todo/create", {
+        const response = await axios.post("https://smarttodoapp-9b06.onrender.com/api/v2/todo/create", {
           ...newTodo,
           id: userId,
         });
@@ -113,7 +113,7 @@ const Todo = () => {
         toastId: `deleting-${todoId}`
       });
 
-      const res = await axios.delete(`https://smarttodoapp-9b06.onrender.com//api/v2/todo/delete/${todoId}`, {
+      const res = await axios.delete(`https://smarttodoapp-9b06.onrender.com/api/v2/todo/delete/${todoId}`, {
         data: { id: userId },
       });
 
@@ -134,7 +134,7 @@ const Todo = () => {
   
     try {
       const res = await axios.put(
-        `https://smarttodoapp-9b06.onrender.com//api/v2/todo/update/${updatedTodo._id}`,
+        `https://smarttodoapp-9b06.onrender.com/api/v2/todo/update/${updatedTodo._id}`,
         {
           ...updatedTodo,
           userId,
@@ -167,7 +167,7 @@ const Todo = () => {
     }
   
     try {
-      const response = await axios.patch(`https://smarttodoapp-9b06.onrender.com//api/v2/todo/toggleCompletion/${id}`);
+      const response = await axios.patch(`https://smarttodoapp-9b06.onrender.com/api/v2/todo/toggleCompletion/${id}`);
       if (response.status === 200) {
         setTodos((prevTodos) =>
           prevTodos.map((todo) =>
