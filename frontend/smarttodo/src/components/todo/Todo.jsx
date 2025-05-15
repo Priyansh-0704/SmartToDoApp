@@ -25,7 +25,7 @@ const Todo = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get(`http://smarttodoapp-9b06.onrender.com//api/v2/todo/getTask/${userId}`);
+        const response = await axios.get(`httpz://smarttodoapp-9b06.onrender.com//api/v2/todo/getTask/${userId}`);
         setTodos(response.data);
       } catch (error) {
         console.log("Error fetching todos:", error);
